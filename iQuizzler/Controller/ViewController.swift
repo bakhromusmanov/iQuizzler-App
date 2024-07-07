@@ -9,17 +9,18 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var trueButton: UIButton!
+    @IBOutlet weak var answer1Button: UIButton!
     
-    @IBOutlet weak var falseButton: UIButton!
+    @IBOutlet weak var answer2Button: UIButton!
+    
+    @IBOutlet weak var answer3Button: UIButton!
     
     @IBOutlet weak var questionLabel: UILabel!
     
     @IBOutlet weak var progressBar: UIProgressView!
     
-    var userAnswer : String?
-    var actualAnswer : String?
-    var questionNumber = 0
+    @IBOutlet weak var scoreLabel: UILabel!
+    
     var quizBrain = QuizBrain ()
     
     override func viewDidLoad() {
@@ -29,9 +30,7 @@ class ViewController: UIViewController {
 
     @IBAction func answerPressed(_ sender: UIButton) {
         
-        
-        
-        var userGotItRight = quizBrain.CheckAnswer(sender.currentTitle!, questionNumber)
+        let userGotItRight = quizBrain.checkAnswer(sender.currentTitle!)
         
         if userGotItRight {
             questionLabel.text = "Correct!"
@@ -41,24 +40,32 @@ class ViewController: UIViewController {
             sender.tintColor = UIColor.red
         }
         
-        
-        if quizBrain.LoadNextQuestion(questionNumber) {
-            questionNumber += 1
-        } else {
-            questionNumber = 0
-        }
-        
+        quizBrain.checkQuizProgress()
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.loadNextQuestion()
         }
     }
     
     func loadNextQuestion(){
-        questionLabel.text = quizBrain.GetQuestion(questionNumber)
-        progressBar.progress = quizBrain.GetProgress(questionNumber)
-        
-        trueButton.tintColor = nil
-        falseButton.tintColor = nil
+        questionLabel.text = quizBrain.getQuestion()
+        progressBar.progress = quizBrain.getProgress()
+        scoreLabel.text = "Score: \(quizBrain.getScore())"
+        resetTintColor()
+        loadNextAnswers()
+    }
+    
+    func resetTintColor (){
+        answer1Button.tintColor = nil
+        answer2Button.tintColor = nil
+        answer3Button.tintColor = nil
+    }
+    
+    func loadNextAnswers(){
+        answer1Button.setTitle(quizBrain.getAnswers(i: 0), for: .normal)
+        answer2Button.setTitle(quizBrain.getAnswers(i: 1), for: .normal)
+        answer3Button.setTitle(quizBrain.getAnswers(i: 2), for: .normal)
     }
 }
+
 
